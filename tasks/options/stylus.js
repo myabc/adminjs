@@ -1,12 +1,11 @@
 module.exports = {
-  "app": {
-    files: {
-      'tmp/public/assets/app.css': 'app/styles/**/*.styl'
-    }
-  },
-  "lib": {
-    files: {
-      'tmp/dist/adminjs.css': 'lib/styles/**/*.styl'
-    }
+  compile: {
+    files: [{
+      expand: true,
+      cwd: 'app/styles',
+      src: ['**/*.styl', '!**/_*.styl'],
+      dest: 'tmp/result/assets/',
+      ext: '.css'
+    }]
   }
 };

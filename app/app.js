@@ -1,18 +1,18 @@
-import Resolver from 'resolver';
+import Resolver from 'ember/resolver';
 
-import server from 'adminjs/app/server';
+import server from 'adminjs/server';
+import NewApplication from 'adminjs/application';
 
-var App = AJS.Application.create({
+var App = NewApplication.create({
   LOG_ACTIVE_GENERATION: true,
+  LOG_MODULE_RESOLVER: true,
+  LOG_TRANSITIONS: true,
+  LOG_TRANSITIONS_INTERNAL: true,
   LOG_VIEW_LOOKUPS: true,
-  modulePrefix: 'adminjs/app', // TODO: loaded via config
-  Resolver: Resolver,
+  modulePrefix: 'adminjs', // TODO: loaded via config
+  Resolver: Resolver['default'],
   title: 'AdminJS'
 });
-
-import Adapter from 'adminjs/app/adapter';
-
-App.Adapter = Adapter;
 
 App.configure(function() {
   this.manage('customer', {

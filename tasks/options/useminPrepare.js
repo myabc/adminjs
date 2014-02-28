@@ -1,6 +1,6 @@
 module.exports = {
-  html: 'public/index.html',
+  html: 'tmp/result/index.html',
   options: {
-    dest: 'tmp/public/'
+    dest: 'dist/'
   }
 };

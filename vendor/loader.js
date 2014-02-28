@@ -1,109 +1,75 @@
-var define, requireModule;
+var define, requireModule, require, requirejs;
 
 (function() {
-  var registry = {}, seen = {};
+  var registry = {}, seen = {}, state = {};
+  var FAILED = false;
 
   define = function(name, deps, callback) {
-    registry[name] = { deps: deps, callback: callback };
+    registry[name] = {
+      deps: deps,
+      callback: callback
+    };
   };
 
-  requireModule = function(name) {
-    if (seen[name]) { return seen[name]; }
-    seen[name] = {};
+  requirejs = require = requireModule = function(name) {
+    if (state[name] !== FAILED &&
+        seen.hasOwnProperty(name)) {
+      return seen[name];
+    }
+
+    if (!registry.hasOwnProperty(name)) {
+      throw new Error('Could not find module ' + name);
+    }
 
     var mod = registry[name];
+    var deps = mod.deps;
+    var callback = mod.callback;
+    var reified = [];
+    var exports;
+    var value;
+    var loaded = false;
 
-    if (!mod) {
-      throw new Error("Module: '" + name + "' not found.");
-    }
+    seen[name] = { }; // enable run-time cycles
 
-    var deps = mod.deps,
-        callback = mod.callback,
-        reified = [],
-        exports;
+    try {
+      for (var i=0, l=deps.length; i<l; i++) {
+        if (deps[i] === 'exports') {
+          reified.push(exports = {});
+        } else {
+          reified.push(requireModule(resolve(deps[i], name)));
+        }
+      }
 
-    for (var i=0, l=deps.length; i<l; i++) {
-      if (deps[i] === 'exports') {
-        reified.push(exports = {});
-      } else {
-        reified.push(requireModule(deps[i]));
+      value = callback.apply(this, reified);
+      loaded = true;
+    } finally {
+      if (!loaded) {
+        state[name] = FAILED;
       }
     }
-
-    var value = callback.apply(this, reified);
     return seen[name] = exports || value;
   };
 
-  define.registry = registry;
-  define.seen = seen;
-})();
+  function resolve(child, name) {
+    if (child.charAt(0) !== '.') { return child; }
 
-define("resolver",
-  [],
-  function() {
-    "use strict";
-  /*
-   * This module defines a subclass of Ember.DefaultResolver that adds two
-   * important features:
-   *
-   *  1) The resolver makes the container aware of es6 modules via the AMD
-   *     output. The loader's registry is consulted so that classes can be 
-   *     resolved directly via the module loader, without needing a manual
-   *     `import`.
-   *  2) is able provide injections to classes that implement `extend`
-   *     (as is typical with Ember).
-   */
+    var parts = child.split('/');
+    var parentBase = name.split('/').slice(0, -1);
 
-  function classFactory(klass) {
-    return {
-      create: function (injections) {
-        if (typeof klass.extend === 'function') {
-          return klass.extend(injections);  
-        } else {
-          return klass;
-        }
-      }
-    };
-  }
+    for (var i = 0, l = parts.length; i < l; i++) {
+      var part = parts[i];
 
-  var underscore = Ember.String.underscore;
-
-  function resolveOther(parsedName) {
-    var prefix = this.namespace.modulePrefix;
-    Ember.assert('module prefix must be defined', prefix);
-
-    var pluralizedType = parsedName.type + 's';
-    var name = parsedName.fullNameWithoutType;
-
-    var moduleName = prefix + '/' +  pluralizedType + '/' + underscore(name);
-    var module;
-
-    if (define.registry[moduleName]) {
-      module = requireModule(moduleName);
-
-      if (typeof module.create !== 'function') {
-        module = classFactory(module);
-      }
-
-      if (Ember.ENV.LOG_MODULE_RESOLVER){
-        Ember.logger.info('hit', moduleName);
-      }
-
-      return module;
-    } else  {
-      if (Ember.ENV.LOG_MODULE_RESOLVER){
-        Ember.logger.info('miss', moduleName);
-      }
-
-      return this._super(parsedName);
+      if (part === '..') { parentBase.pop(); }
+      else if (part === '.') { continue; }
+      else { parentBase.push(part); }
     }
+
+    return parentBase.join('/');
   }
 
-  // Ember.DefaultResolver docs:
-  //   https://github.com/emberjs/ember.js/blob/master/packages/ember-application/lib/system/resolver.js
-  var Resolver = Ember.DefaultResolver.extend({
-    resolveOther: resolveOther
-  });
-
-  return Resolver;
-});
+  requirejs._eak_seen = registry;
+  requirejs.clear = function(){
+    requirejs._eak_seen = registry = {};
+    seen = {};
+  };
+})();
