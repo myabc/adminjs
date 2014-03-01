@@ -74,6 +74,7 @@ module.exports = function(grunt) {
 
   config.env = process.env;
 
+  grunt.registerTask('emblem:compile', ['emblem:app', 'emblem:lib']);
 
   // App Kit's Main Tasks
   // ====================
