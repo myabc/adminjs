@@ -1,9 +1,9 @@
 import Resolver from 'ember/resolver';
 
 import server from 'adminjs/server';
-import NewApplication from 'adminjs/application';
+import AJSApplication from 'adminjs/application';
 
-var App = NewApplication.create({
+var App = AJSApplication.create({
   LOG_ACTIVE_GENERATION: true,
   LOG_MODULE_RESOLVER: true,
   LOG_TRANSITIONS: true,

@@ -4,7 +4,8 @@ module.exports = {
   options: {
     whitelist: {
       'ember/resolver': ['default'],
-      'server': ['default']
+      'server': ['default'],
+      'adminjs/application': ['default']
     }
   },
 
