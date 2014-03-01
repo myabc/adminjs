@@ -6,7 +6,9 @@
     "setTimeout": true,
     "Ember": true,
     "Em": true,
-    "DS": true,
+    "Ep": true,
+    "Faker": true,
+    "sinon": true,
     "$": true
   },
   "node" : false,
