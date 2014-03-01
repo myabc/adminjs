@@ -1,5 +1,4 @@
-import Application from 'appkit/app';
-import Router from 'appkit/router';
+import Application from 'adminjs/app';
 
 function startApp(attrs) {
   var App;
@@ -11,7 +10,7 @@ function startApp(attrs) {
     LOG_VIEW_LOOKUPS: false
   }, attrs); // but you can override;
 
-  Router.reopen({
+  App.Router.reopen({
     location: 'none'
   });
 
