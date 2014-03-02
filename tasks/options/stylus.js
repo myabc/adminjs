@@ -6,6 +6,12 @@ module.exports = {
       src: ['**/*.styl', '!**/_*.styl'],
       dest: 'tmp/result/assets/',
       ext: '.css'
+    },{
+      expand: true,
+      cwd: 'lib/styles',
+      src: ['**/*.styl', '!**/_*.styl'],
+      dest: 'tmp/result/assets/',
+      ext: '.css'
     }]
   }
 };

@@ -29,13 +29,13 @@ module.exports = {
     options: {
       sourcesContent: true
     }
+  },
+
+  "vendorCss": {
+    src: ['vendor/**/*.css'],
+    dest: 'tmp/result/assets/vendor.css'
   }
 
-  //vendorCss": {
-  //    src: ['vendor/**/*.css'],
-  //    dest: 'tmp/public/assets/vendor.css'
-  //  },
-  //
   //  "distCss": {
   //    src: ['tmp/dist/**/*.css'],
   //    dest: 'dist/adminjs.css'
